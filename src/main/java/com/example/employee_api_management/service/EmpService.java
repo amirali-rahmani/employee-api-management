@@ -1,55 +1,99 @@
 package com.example.employee_api_management.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Optional;
-
+import com.example.employee_api_management.dto.EmployeeRequestDTO;
+import com.example.employee_api_management.dto.EmployeeResponseDTO;
+import com.example.employee_api_management.entity.Employee;
+import com.example.employee_api_management.repository.EmployeeRepository;
+import com.example.employee_api_management.execption.EmailAlreadyExistsException;
+import com.example.employee_api_management.execption.EmployeeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.employee_api_management.entity.Employee;
-import com.example.employee_api_management.repository.EmployeeRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmpService {
-    
+
     @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
-    public ArrayList<Employee> findAllEmployee(){
-           return (ArrayList<Employee>) employeeRepository.findAll();
+    // =========================
+    // CREATE EMPLOYEE
+    // =========================
+    public EmployeeResponseDTO addEmployee(EmployeeRequestDTO dto) {
+
+        // check email uniqueness
+        if (employeeRepository.existsByEmail(dto.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
+
+        Employee employee = mapToEntity(dto);
+        Employee saved = employeeRepository.save(employee);
+
+        return mapToDTO(saved);
     }
 
-    public Employee findEmployeeById(long id){
-            Optional<Employee> employee = employeeRepository.findById(id);
-            if(employee.isPresent())
-                 return employee.get();
-            else
-                return null;    
+    // =========================
+    // GET ALL EMPLOYEES
+    // =========================
+    public List<EmployeeResponseDTO> findAllEmployees() {
 
+        return employeeRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    public void addEmployee(){
-         ArrayList<Employee> employees = new ArrayList<Employee>();
+    // =========================
+    // GET EMPLOYEE BY ID
+    // =========================
+    public EmployeeResponseDTO findEmployeeById(long id) {
 
-         employees.add(new Employee("Amirali","Rahmani","C++ developer",
-         "Rahmani-A@behpardakht.com",new BigDecimal("50000000"),LocalDate.of(2025,4,1)));
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException("Employee not found with id: " + id));
 
-         employees.add(new Employee("Shadan","Rahmani","Java developer",
-         "Rahmani-S@TIDDEV.com",new BigDecimal("60000000"),LocalDate.of(2024,5,1)));
-
-         employees.add(new Employee("Jack","Smith","C# developer",
-         "Smith-@apple.com",new BigDecimal("100000000"),LocalDate.of(2020,6,1)));
-
-         employees.add(new Employee("Roberto","Carlos","python developer",
-         "Carlos-S@google.com",new BigDecimal("110000000"),LocalDate.of(2021,5,1)));
-
-         employeeRepository.saveAll(employees);
+        return mapToDTO(employee);
     }
 
-    public void deleteAllEmployee(){
-         employeeRepository.deleteAll();
+    // =========================
+    // DELETE ALL EMPLOYEES
+    // =========================
+    public void deleteAllEmployees() {
+        employeeRepository.deleteAll();
     }
 
+    // =========================
+    // MAPPING METHODS
+    // =========================
+
+    private Employee mapToEntity(EmployeeRequestDTO dto) {
+
+        Employee employee = new Employee();
+
+        employee.setFirstName(dto.getFirstName());
+        employee.setLastName(dto.getLastName());
+        employee.setJobTitle(dto.getJobTitle());
+        employee.setEmail(dto.getEmail());
+        employee.setSalary(dto.getSalary());
+        employee.setHireDate(dto.getHireDate());
+
+        return employee;
+    }
+
+    private EmployeeResponseDTO mapToDTO(Employee employee) {
+
+        EmployeeResponseDTO dto = new EmployeeResponseDTO();
+
+        dto.setId(employee.getId());
+        dto.setFirstName(employee.getFirstName());
+        dto.setLastName(employee.getLastName());
+        dto.setJobTitle(employee.getJobTitle());
+        dto.setEmail(employee.getEmail());
+        dto.setSalary(employee.getSalary());
+        dto.setHireDate(employee.getHireDate());
+
+        return dto;
+    }
 }

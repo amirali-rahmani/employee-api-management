@@ -9,4 +9,5 @@ import com.example.employee_api_management.entity.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
     // ArrayList<Employee>findAllEmployee();
+    boolean existsByEmail(String email);
 }

@@ -1,47 +1,44 @@
 package com.example.employee_api_management.controller;
 
-import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.employee_api_management.entity.Employee;
+import com.example.employee_api_management.dto.EmployeeRequestDTO;
+import com.example.employee_api_management.dto.EmployeeResponseDTO;
 import com.example.employee_api_management.service.EmpService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-
+import java.util.List;
 
 @RestController
+@RequestMapping("/employees")
 public class EmployeeController {
-    
+
     @Autowired
-    EmpService empService;
+    private EmpService empService;
 
-    @PostMapping("/")   
-    public void add(){
-        empService.addEmployee();
+    // CREATE EMPLOYEE
+    @PostMapping
+    public EmployeeResponseDTO addEmployee(
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        return empService.addEmployee(dto);
     }
 
-    @GetMapping("/findall")
-    public ArrayList<Employee> findAllEmployees(){
-        return empService.findAllEmployee();
+    // GET ALL EMPLOYEES
+    @GetMapping
+    public List<EmployeeResponseDTO> findAllEmployees() {
+        return empService.findAllEmployees();
     }
 
-
-    @GetMapping("/findbyid/{id}")   
-    public Employee findEmployeeById(@PathVariable long id){
+    // GET EMPLOYEE BY ID
+    @GetMapping("/{id}")
+    public EmployeeResponseDTO findEmployeeById(@PathVariable long id) {
         return empService.findEmployeeById(id);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteAllEmployee(){
-        empService.deleteAllEmployee();
+    // DELETE ALL EMPLOYEES
+    @DeleteMapping
+    public void deleteAllEmployees() {
+        empService.deleteAllEmployees();
     }
-
-
 }

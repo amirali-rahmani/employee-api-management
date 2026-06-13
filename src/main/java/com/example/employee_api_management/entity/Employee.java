@@ -71,7 +71,7 @@ public class Employee {
         this.jobTitle = jobTitle;
     }
 
-     @Column(name = "email")
+     @Column(name="email",nullable = false, unique = true)
     private String email;
 
     public String getEmail() {
