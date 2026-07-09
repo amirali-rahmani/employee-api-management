@@ -10,6 +10,18 @@ import java.time.LocalDate;
 
 public class EmployeeRequestDTO {
 
+
+    @NotNull(message = "Department is required")
+    private Long departmentId;
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
     @NotBlank(message = "First name is required")
     private String firstName;
 

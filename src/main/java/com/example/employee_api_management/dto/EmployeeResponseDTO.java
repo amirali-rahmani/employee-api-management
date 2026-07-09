@@ -14,6 +14,25 @@ public class EmployeeResponseDTO {
         this.id = id;
     }
 
+    private Long departmentId;
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    private String departmentName;
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
     private String firstName;
 
     public String getFirstName() {

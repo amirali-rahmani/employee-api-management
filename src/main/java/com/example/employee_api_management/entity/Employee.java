@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,6 +38,18 @@ public class Employee {
  
     public long getId() {
         return id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+     public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
      @Column(name = "first_name")

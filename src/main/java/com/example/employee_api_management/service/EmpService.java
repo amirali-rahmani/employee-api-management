@@ -2,8 +2,11 @@ package com.example.employee_api_management.service;
 
 import com.example.employee_api_management.dto.EmployeeRequestDTO;
 import com.example.employee_api_management.dto.EmployeeResponseDTO;
+import com.example.employee_api_management.entity.Department;
 import com.example.employee_api_management.entity.Employee;
+import com.example.employee_api_management.repository.DepartmentRepository;
 import com.example.employee_api_management.repository.EmployeeRepository;
+import com.example.employee_api_management.execption.DepartmentNotFoundException;
 import com.example.employee_api_management.execption.EmailAlreadyExistsException;
 import com.example.employee_api_management.execption.EmployeeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class EmpService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     // =========================
     // CREATE EMPLOYEE
@@ -70,6 +76,12 @@ public class EmpService {
 
     private Employee mapToEntity(EmployeeRequestDTO dto) {
 
+        Department department =
+        departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() ->
+                        new DepartmentNotFoundException(
+                                "Department not found"));
+
         Employee employee = new Employee();
 
         employee.setFirstName(dto.getFirstName());
@@ -78,6 +90,7 @@ public class EmpService {
         employee.setEmail(dto.getEmail());
         employee.setSalary(dto.getSalary());
         employee.setHireDate(dto.getHireDate());
+        employee.setDepartment(department);
 
         return employee;
     }
@@ -93,6 +106,8 @@ public class EmpService {
         dto.setEmail(employee.getEmail());
         dto.setSalary(employee.getSalary());
         dto.setHireDate(employee.getHireDate());
+        dto.setDepartmentId(employee.getDepartment().getId());
+        dto.setDepartmentName(employee.getDepartment().getName());
 
         return dto;
     }
