@@ -10,6 +10,7 @@ import com.example.employee_api_management.execption.DepartmentNotFoundException
 import com.example.employee_api_management.execption.EmailAlreadyExistsException;
 import com.example.employee_api_management.execption.EmployeeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,15 +41,30 @@ public class EmpService {
         return mapToDTO(saved);
     }
 
+    // Search employees
+    public List<EmployeeResponseDTO> searchEmployees(String name){
+             return employeeRepository
+            .findByFirstNameContainingIgnoreCase(name)
+            .stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+    }
+
     // =========================
     // GET ALL EMPLOYEES
     // =========================
-    public List<EmployeeResponseDTO> findAllEmployees() {
+    // public List<EmployeeResponseDTO> findAllEmployees() {
 
-        return employeeRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    //     return employeeRepository.findAll()
+    //             .stream()
+    //             .map(this::mapToDTO)
+    //             .collect(Collectors.toList());
+    // }
+
+    public Page<EmployeeResponseDTO> findAllEmployees(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Employee> employees = employeeRepository.findAll(pageable);
+        return employees.map(this::mapToDTO);
     }
 
     // =========================
